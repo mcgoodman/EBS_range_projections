@@ -1,0 +1,26 @@
+Package: aclim2sdms
+Title: SDMs for projecting Eastern Bering Sea species distributions using ROMS-NPZ inputs
+Version: 0.0.0.9000
+Authors@R: 
+    person("Maurice", "Goodman", , "goodman3@stanford.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-6874-2313"))
+Description: Package to build SDMs to Eastern Bering Sea species abundance data, using `mgcv` GAMs fitted to ROMS-NPZ hindcasts. GAMs control for spatiotemporal autocorrelation and project species ranges using downscaled 10km climate models, treating spatiotemporal variation as random by averaging projections across annual variation in the spatial field.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    here,
+    dplyr,
+    tidyr,
+    purrr,
+    ggplot2,
+    sf,
+    stars,
+    ncmeta,
+    ncdf4,
+    mgcv,
+    foreach,
+    doParallel,
+    cowplot,
+    dismo
