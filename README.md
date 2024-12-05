@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14279450.svg)](https://doi.org/10.5281/zenodo.14279450)
+
 This repository contains data, code, and statistical output for **Goodman, Reum, Barnes, Punt, Ianelli, McHuron, De Leo, & Holsman (2024), "Climate Covariate Choice and Uncertainty in Projecting Species Range Shifts: A Case Study in the Eastern Bering Sea"**, in the journal *Fish and Fisheries*.
 
 **Directory structure:**
