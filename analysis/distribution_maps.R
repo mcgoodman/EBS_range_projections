@@ -144,7 +144,7 @@ for (i in 1:length(sp_paths)) {
   
   # Probability of occurrence plots
   
-  ebs_boundary <- st_buffer(st_union(st_as_sf(dplyr::select(sims[,,,1], p_occurrence))), 2500)
+  ebs_boundary <- st_buffer(st_union(st_as_sf(dplyr::select(sims[,,,1], p_occurrence), long = TRUE)), 2500)
   
   hindcast_plot <- ggplot() + 
     geom_sf(data = ebs_boundary, fill = "grey60", color = "grey60", linewidth = 1) + 
