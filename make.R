@@ -4,7 +4,11 @@ if (!require("aclim2sdms")) {
   require("aclim2sdms")
 }
 
-pkgs <- c("here", "dplyr", "tidyr", "purrr", "ggplot2", "sf", "stars", "ncmeta", "mgcv", "aclim2sdms", "foreach", "doParallel")
+if (!require("Bering10KThredds")) {
+  devtools::install_github("mcgoodman/Bering10KThredds")
+}
+
+pkgs <- c("here", "dplyr", "tidyr", "purrr", "ggplot2", "sf", "stars", "ncmeta", "mgcv", "aclim2sdms", "Bering10KThredds", "foreach", "doParallel")
 
 sapply(pkgs, require, character.only = TRUE)
 
