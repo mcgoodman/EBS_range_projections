@@ -1,5 +1,5 @@
 
-pkgs <- c("here", "stars", "sf", "dplyr", "tidyr", "aclim2sdms")
+pkgs <- c("here", "stars", "sf", "dplyr", "tidyr", "aclim2sdms", "Bering10KThredds")
 sapply(pkgs, require, character.only = TRUE)
 
 ak_coast <- get_ak_coast() ## Alaska coastline map

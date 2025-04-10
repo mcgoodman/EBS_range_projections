@@ -1,5 +1,5 @@
 
-pkgs <- c("here", "stars", "dplyr", "curl", "aclim2sdms")
+pkgs <- c("here", "stars", "dplyr", "curl", "aclim2sdms", "Bering10KThredds")
 sapply(pkgs, require, character.only = TRUE)
 
 # Path to write files to

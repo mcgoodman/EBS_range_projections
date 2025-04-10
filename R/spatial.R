@@ -26,21 +26,3 @@ add_utm <- function(data, ll_cols = c("longitude", "latitude"), ll_crs = 4326, u
   data
   
 }
-
-
-#' @title Simple function to convert longitude from 0/360 to -180/180 and vice-versa
-#' @param x A numeric vector of longitudes
-#' @param from Whether to convert from -180/180 or 0/360 
-#'
-#' @return A numeric vector
-#' @export
-rotate_lon <- function(x, from = c("-180/180", "0/360")) {
-  
-  from <- match.arg(from)
-  
-  from |> switch(
-    `-180/180` = (x + 360) %% 360, 
-    `0/360` = ((x + 180) %% 360) - 180
-  )
-  
-}
