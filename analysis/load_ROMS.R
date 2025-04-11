@@ -10,7 +10,7 @@ ak_coast <- get_ak_coast() ## Alaska coastline map
 load(here("data", "BC_ACLIMsurveyrep", "ACLIMsurveyrep_B10K-K20P19_CORECFS_BC_hind.Rdata"))
 
 # Read in temperature, pH, and oxygen corresponding to surveys
-hind_srvy <- read.csv(here("data", "surveyrep_observed_1982-2022.csv"))
+hind_srvy <- read.csv(here("data", "surveyrep_observed_1982-2024.csv"))
 
 # Survey-replicated datasets contain some surveys which are never actually sampled
 stns_keep <- trimws(unique(hind_srvy$STATION[hind_srvy$STATION %in% trimws(hind$station_id)]))

@@ -37,7 +37,7 @@ for (i in 1:nrow(specs)) {
                      start = 2025)
   
   # Write out non-bias-corrected forecast
-  prjn_path <- paste0(roms_dir, "/", roms_name, "K20P19", "_", tolower(specs$earth_model[i]), "_", tolower(specs$scenario[i]), "_", specs$var[i], ".rds")
+  prjn_path <- paste0(roms_dir, "/", roms_name, tolower(specs$earth_model[i]), "_", tolower(specs$scenario[i]), "_", specs$var[i], ".rds")
   saveRDS(prjn, prjn_path)
   
   # Obtain weekly weighted means for historical
@@ -47,7 +47,7 @@ for (i in 1:nrow(specs)) {
   roms_bc <- delta_correct(prjn, hind_wkly, hist_wkly); rm(prjn, hist_wkly)
   
   # Write out
-  bc_path <- paste0(roms_bc_dir, "/", roms_name, "K20P19", "_", tolower(specs$earth_model[i]), "_", tolower(specs$scenario[i]), "_", specs$var[i], "_bc.rds" )
+  bc_path <- paste0(roms_bc_dir, "/", roms_name, tolower(specs$earth_model[i]), "_", tolower(specs$scenario[i]), "_", specs$var[i], "_bc.rds" )
   saveRDS(roms_bc, bc_path)
   
   rm(roms_bc); gc()

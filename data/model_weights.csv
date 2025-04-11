@@ -1,0 +1,113 @@
+"species","bin","component","model_number","formula","weight"
+"Pacific cod","adult","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0340674646943279
+"Pacific cod","adult","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.00434298758483863
+"Pacific cod","adult","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.398156362795912
+"Pacific cod","adult","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.563433184924921
+"Pacific cod","adult","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.128715320515352
+"Pacific cod","adult","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.070366992450421
+"Pacific cod","adult","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.623046697726091
+"Pacific cod","adult","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.177870989308136
+"Pacific cod","juvenile","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0130735695301016
+"Pacific cod","juvenile","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0348616430313376
+"Pacific cod","juvenile","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.897423300311049
+"Pacific cod","juvenile","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.0546414871275114
+"Pacific cod","juvenile","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0546733015051675
+"Pacific cod","juvenile","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.193699751684853
+"Pacific cod","juvenile","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.480501582146211
+"Pacific cod","juvenile","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.271125364663769
+"Pacific halibut","adult","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0441785972697631
+"Pacific halibut","adult","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.00468061907780578
+"Pacific halibut","adult","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.781913857598575
+"Pacific halibut","adult","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.169226926053856
+"Pacific halibut","adult","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0202530612860245
+"Pacific halibut","adult","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.111931784787981
+"Pacific halibut","adult","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.539825387093007
+"Pacific halibut","adult","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.327989766832988
+"Pacific halibut","juvenile","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.398337665910404
+"Pacific halibut","juvenile","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0575058204991318
+"Pacific halibut","juvenile","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.521092667484806
+"Pacific halibut","juvenile","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.0230638461056576
+"Pacific halibut","juvenile","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.223767644378581
+"Pacific halibut","juvenile","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0131632417185233
+"Pacific halibut","juvenile","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.550715988959292
+"Pacific halibut","juvenile","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.212353124943604
+"arrowtooth flounder","adult","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0122281251947501
+"arrowtooth flounder","adult","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0379435150159373
+"arrowtooth flounder","adult","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.062451112647281
+"arrowtooth flounder","adult","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.887377247142032
+"arrowtooth flounder","adult","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0163473574461482
+"arrowtooth flounder","adult","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.139490107767838
+"arrowtooth flounder","adult","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.200495445903969
+"arrowtooth flounder","adult","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.643667088882045
+"arrowtooth flounder","juvenile","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.00532206566895698
+"arrowtooth flounder","juvenile","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0262357570491965
+"arrowtooth flounder","juvenile","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.116679495718229
+"arrowtooth flounder","juvenile","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.851762681563617
+"arrowtooth flounder","juvenile","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0694995771998252
+"arrowtooth flounder","juvenile","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.163243876029046
+"arrowtooth flounder","juvenile","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.636183473065186
+"arrowtooth flounder","juvenile","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.131073073705943
+"northern rock sole","adult","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0851207670330163
+"northern rock sole","adult","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.045451770223759
+"northern rock sole","adult","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.811696419600513
+"northern rock sole","adult","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.0577310431427114
+"northern rock sole","adult","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.209746931725381
+"northern rock sole","adult","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0822344271637701
+"northern rock sole","adult","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.320198160569313
+"northern rock sole","adult","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.387820480541535
+"northern rock sole","juvenile","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",4.97685898779896e-06
+"northern rock sole","juvenile","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.189575114662872
+"northern rock sole","juvenile","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.188801259702486
+"northern rock sole","juvenile","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.621618648775654
+"northern rock sole","juvenile","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0261131740387467
+"northern rock sole","juvenile","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.103191334956399
+"northern rock sole","juvenile","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.0255233047211028
+"northern rock sole","juvenile","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.845172186283752
+"red king crab","all","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.166686331240362
+"red king crab","all","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.00306675474514404
+"red king crab","all","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.414576922583487
+"red king crab","all","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.415669991431007
+"red king crab","all","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.242537609003484
+"red king crab","all","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.128429976466059
+"red king crab","all","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.429102879367988
+"red king crab","all","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.19992953516247
+"snow crab","all","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.200816020887033
+"snow crab","all","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.00805213077464899
+"snow crab","all","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.00997056111430233
+"snow crab","all","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.781161287224016
+"snow crab","all","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0860368890465081
+"snow crab","all","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.255654374597286
+"snow crab","all","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.136304588310136
+"snow crab","all","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.52200414804607
+"walleye pollock","adult","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0252557800391898
+"walleye pollock","adult","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.00329669695504114
+"walleye pollock","adult","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.717173681979849
+"walleye pollock","adult","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.25427384102592
+"walleye pollock","adult","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.187513659499871
+"walleye pollock","adult","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.03657813343563
+"walleye pollock","adult","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.376939824863263
+"walleye pollock","adult","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.398968382201236
+"walleye pollock","juvenile","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0997551601378415
+"walleye pollock","juvenile","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0411260806886647
+"walleye pollock","juvenile","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.0842739289385274
+"walleye pollock","juvenile","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.774844830234966
+"walleye pollock","juvenile","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.50980424401812
+"walleye pollock","juvenile","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0859154936548648
+"walleye pollock","juvenile","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.373769379682296
+"walleye pollock","juvenile","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.0305108826447187
+"yellowfin sole","adult","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.044524746708396
+"yellowfin sole","adult","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.399834727793246
+"yellowfin sole","adult","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.271159173212307
+"yellowfin sole","adult","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.284481352286051
+"yellowfin sole","adult","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.023495233256482
+"yellowfin sole","adult","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.102307138133487
+"yellowfin sole","adult","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.466691478693319
+"yellowfin sole","adult","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.407506149916712
+"yellowfin sole","juvenile","binomial",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.00921357954336875
+"yellowfin sole","juvenile","binomial",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.427462657599574
+"yellowfin sole","juvenile","binomial",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.274241844957469
+"yellowfin sole","juvenile","binomial",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.289081917899589
+"yellowfin sole","juvenile","tweedie",1,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.0414691151665804
+"yellowfin sole","juvenile","tweedie",2,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(depth_m,      k = 3) + s(phi, k = 3)",0.394609936469695
+"yellowfin sole","juvenile","tweedie",3,"~s(temp_bottom5m, k = 3) + s(oxygen_bottom5m, k = 3) + s(X, Y,      k = 20) + s(X, Y, by = cold_pool_2C, k = 20)",0.139257486543325
+"yellowfin sole","juvenile","tweedie",4,"~s(temp_bottom5m, k = 3) + s(pH_bottom5m, k = 3) + s(X, Y, k = 20) +      s(X, Y, by = cold_pool_2C, k = 20)",0.424663461820399

@@ -7,7 +7,7 @@ cpue_data <- read.csv(survey_file)
 cpue_data <- cpue_data |> dplyr::select(YEAR, STATION, HAUL, WTCPUE)
 
 ## Read in data containing stations surveyed in each year, to add missing zeroes and area swept
-srvy <- read.csv("data/surveyrep_observed_1982-2022.csv")
+srvy <- read.csv("data/surveyrep_observed_1982-2024.csv")
 srvy <- srvy |> mutate(area_swept_km2 = AREA_SWEPT_HA / 100) |> dplyr::select(YEAR, STATION, HAUL, area_swept_km2)
 
 ## Bin data into juvenile and adult, aggregate catches by bin
@@ -24,17 +24,11 @@ drop_yrs <- cpue_data |> group_by(year) |> summarize(p = sum(cpue_kgkm2 == 0)/n(
 drop_yrs <- drop_yrs$year[drop_yrs$p == 1]
 
 ## Merge survey data with ROMS-NPZ data
-joined_data <- cpue_data |>
+model_data <- cpue_data |>
   filter(!(year %in% drop_yrs)) |> 
   left_join(filter(dplyr::select(ROMS_full, -area_swept_km2), sim == "hindcast"), by = c("station_id", "year")) |> 
-  mutate(present = as.numeric(cpue_kgkm2 > 0)) |> 
-  filter(year <= 2019)
+  mutate(present = as.numeric(cpue_kgkm2 > 0))
 
 ## Merge 2021-2022 survey data with ROMS-NPZ data
-val_data <- cpue_data |> 
-  filter(year %in% c(2021, 2022)) |> 
-  left_join(dplyr::select(filter(ROMS_full, sim == "hindcast" & year %in% 2021:2022), -area_swept_km2), by = c("station_id", "year")) |> 
-  mutate(present = as.numeric(cpue_kgkm2 > 0)) |> 
-  drop_na()
 
 rm(cpue_data, srvy, drop_yrs)

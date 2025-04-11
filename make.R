@@ -59,6 +59,9 @@ specs <- list(
   
 )
 
+## Pre-estimated model weights
+weights <- read.csv(here("data", "model_weights.csv"))
+
 # Run Models ----------------------------------------------------------------------------
 
 dir.create(here("output"))
@@ -95,19 +98,22 @@ for (i in 1:nrow(specs)) {
    
     source(here("analysis", "load_trawl_size_binned.R"))
     
-    model_data <- joined_data |> filter(bin == length_bin)
-    val_data <- val_data |> filter(bin == length_bin)
+    model_data <- model_data |> filter(bin == length_bin)
+    
+    w_binom <- weights$weight[weights$species == species & weights$bin == length_bin & weights$component == "binomial"]
+    w_tw <- weights$weight[weights$species == species & weights$bin == length_bin & weights$component == "tweedie"]
      
   } else {
     
     source(here("analysis", "load_trawl.R"))
     
-    model_data <- joined_data
+    w_binom <- weights$weight[weights$species == species & weights$component == "binomial"]
+    w_tw <- weights$weight[weights$species == species & weights$component == "tweedie"]
     
   }
   
   rstudioapi::jobRunScript(
-    here("analysis", "gam_averaging.R"),
+    here("analysis", "gam_predictions.R"),
     name = ifelse(is.na(length_bin), species, paste0(species, " (", length_bin, ")")),
     workingDir = here(),
     importEnv = TRUE
@@ -129,23 +135,3 @@ while(n_complete < nrow(specs)) {
   Sys.sleep(10)
   n_complete <- length(list.files(here("output"), pattern = "complete", recursive = TRUE))
 }
-
-# Derived outputs -----------------------------------------------------------------------
-
-## Compute overlap for all species / size bin pairs
-source(here("analysis", "compute_overlap.R"))
-
-## Compute empirical range metrics (centroids and area occupied)
-source(here("analysis", "range_metrics_empirical.R"))
-
-## Projected and fitted vs. observed maps 
-source(here("analysis", "distribution_maps.R"))
-
-## Plots of the cold pool SVCs
-source(here("analysis", "cold_pool_svc_plots.R"))
-
-## Compare fits and range shifts projected by different candidate models
-source(here("analysis", "model_comparison.R"))
-
-## Write outputs as netcdf
-source(here("analysis", "save_ncdf.R"))

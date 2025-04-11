@@ -1,5 +1,5 @@
 
-pkgs <- c("stars", "sf", "dplyr")
+pkgs <- c("aclim2sdms", "Bering10KThredds", "stars", "sf", "dplyr", "here")
 sapply(pkgs, require, character.only = TRUE)
 
 # Read in ROMS level 2 hindcast
@@ -13,7 +13,7 @@ phi <- get_sediment()
 
 # Read in survey stations by year
 srvy <- read.csv(here("data", "trawl_surveys", "ebs_stations_by_year.csv"))
-srvy <- srvy |> filter(YEAR <= 2022) |> mutate(DATETIME = as.POSIXct(DATETIME, format = "%m/%d/%Y %H:%M:%OS")) |> arrange(DATETIME)
+srvy <- srvy |> mutate(DATETIME = as.POSIXct(DATETIME, format = "%d-%b-%Y %H:%M%OS")) |> arrange(DATETIME)
 srvy <- st_as_sf(srvy, coords = c("LONGITUDE", "LATITUDE"), crs = 4326)
 srvy[,c(names(hind_lvl2), "depth_m", "phi")] <- NA
 
@@ -28,8 +28,16 @@ for (i in 1:nrow(srvy)) {
   srvy$depth_m[i] <- -as.numeric(st_extract(bathy, srvy[i,])[1, 1, drop = TRUE])
   srvy$phi[i] <- as.numeric(st_extract(phi, srvy[i,])[1, 1, drop = TRUE])
   
+  if (any(is.na(srvy[i, names(hind_lvl2)]))) {
+    
+    centroids <- st_centroid(st_as_sf(hind_lvl2$temp[,,,roms_date]))
+    nearest <- centroids[which.min(st_distance(srvy[i,], centroids)),]
+    srvy[i, names(hind_lvl2)] <- vapply(hind_lvl2, \(x) st_extract(x[,,,roms_date], nearest)[1, 1, drop = TRUE], numeric(1))
+    
+  }
+  
 }
 
-write.csv(st_drop_geometry(srvy), "data/surveyrep_observed_1982-2022.csv", row.names = FALSE)
+write.csv(st_drop_geometry(srvy), "data/surveyrep_observed_1982-2024.csv", row.names = FALSE)
 
 rm(list = ls())

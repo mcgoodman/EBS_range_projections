@@ -5,7 +5,7 @@ sapply(pkgs, require, character.only = TRUE)
 load(survey_file)
 
 # Full list of standard hauls
-srvy <- read.csv("data/surveyrep_observed_1982-2022.csv")
+srvy <- read.csv("data/surveyrep_observed_1982-2024.csv")
 srvy <- srvy |> dplyr::select(STATIONID = STATION, YEAR, HAUL)
 
 # Drop hauls where species was observed but no length data was recorded (common earlier in the survey)
@@ -38,17 +38,9 @@ drop_yrs <- cpue_data |> group_by(year) |> summarize(p = sum(cpue_kgkm2 == 0)/n(
 drop_yrs <- drop_yrs$year[drop_yrs$p == 1]
 
 ## Merge survey data with hindcast ROMS-NPZ data
-joined_data <- cpue_data |>
+model_data <- cpue_data |>
   filter(!(year %in% drop_yrs)) |> 
   left_join(filter(ROMS_full, sim == "hindcast"), by = c("station_id", "year")) |> 
-  mutate(present = as.numeric(cpue_kgkm2 > 0)) |> 
-  filter(year <= 2019)
-
-## Merge 2021-2022 survey data with ROMS-NPZ data
-val_data <- cpue_data |> 
-  filter(year %in% c(2021, 2022)) |> 
-  left_join(filter(ROMS_full, sim == "hindcast" & year %in% 2021:2022), by = c("station_id", "year")) |> 
-  mutate(present = as.numeric(cpue_kgkm2 > 0)) |> 
-  drop_na()
+  mutate(present = as.numeric(cpue_kgkm2 > 0))
 
 rm(cpue_data, srvy, drop_yrs)

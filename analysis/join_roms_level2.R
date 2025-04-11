@@ -1,5 +1,5 @@
 
-pkgs <- c("here", "stars", "sf", "dplyr", "aclim2sdms")
+pkgs <- c("here", "stars", "sf", "dplyr", "aclim2sdms", "Bering10KThredds")
 sapply(pkgs, require, character.only = TRUE)
 
 # This script joins bias-corrected ROMS outputs pertaining to the same scenario / earth model
