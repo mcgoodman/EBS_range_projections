@@ -12,18 +12,17 @@ roms_files <- c(roms_files, list.files(here("data", "roms_level2"), pattern = "C
 roms_base <- basename(roms_files)
 roms_info <- strsplit(gsub("bc.rds|.rds", "", roms_base), "_")
 roms_var <- vapply(roms_info, \(x) paste(tail(x, 2), collapse = "_"), "character")
-roms_version <- vapply(roms_info, \(x) x[2], "character") 
-roms_model <- ifelse(roms_version == "CORECFS", "CORECFS", vapply(roms_info, \(x) x[3], "character"))
-roms_scenario <- ifelse(roms_version == "CORECFS", "hindcast", toupper(vapply(roms_info, \(x) x[4], "character")))
+roms_esm <- toupper(vapply(roms_info, \(x) x[2], "character"))
+roms_scenario <- ifelse(roms_esm == "CORECFS", "hindcast", toupper(vapply(roms_info, \(x) x[3], "character")))
 
 # Unique ROMS sims
-roms_sims <- as.data.frame(unique(cbind(model = roms_model, scenario = roms_scenario)))
+roms_sims <- as.data.frame(unique(cbind(model = roms_esm, scenario = roms_scenario)))
 
 dir.create(save_dir <- here("data", "roms_level2_bc_annual"))
 
 for (i in 1:nrow(roms_sims)) {
  
-  vars_i <- roms_var[roms_model == roms_sims$model[i] & roms_scenario == roms_sims$scenario[i]]
+  vars_i <- roms_var[roms_esm == roms_sims$model[i] & roms_scenario == roms_sims$scenario[i]]
   
   cat(paste0(paste(roms_sims[i,], collapse = " "), " (", i, "/", nrow(roms_sims), ")\n"))
   
@@ -31,16 +30,16 @@ for (i in 1:nrow(roms_sims)) {
     
     cat(paste("   ", vars_i[j], "\n"))
     
-    roms_bc <- readRDS(roms_files[roms_var == vars_i[j] & roms_model == roms_sims$model[i] & roms_scenario == roms_sims$scenario[i]])
+    roms_bc <- readRDS(roms_files[roms_var == vars_i[j] & roms_esm == roms_sims$model[i] & roms_scenario == roms_sims$scenario[i]])
     
     # Find dates in each year which are closest to July 1st
     dates <- as.Date(st_get_dimension_values(roms_bc, "ocean_time"))
     years <- lubridate::year(dates)
     date_sub <- aggregate(dates, by = list(years), \(x) x[which.min(abs(x - as.Date(paste0(lubridate::year(x), "-07-01"))))])$x
     if(roms_sims$scenario[i] == "hindcast") {
-      date_sub <- which(years <= 2022 & dates %in% date_sub)
+      date_sub <- which(years <= 2024 & dates %in% date_sub)
     } else {
-      date_sub <- which(years >= 2023 & dates %in% date_sub) 
+      date_sub <- which(years >= 2025 & dates %in% date_sub) 
     }
     
     # Subset to those dates
