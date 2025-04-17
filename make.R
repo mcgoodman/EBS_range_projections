@@ -15,15 +15,30 @@ sapply(pkgs, require, character.only = TRUE)
 # Download & bias-correct ROMS level 2 data ---------------------------------------------
 
 ## This takes up to a couple days - do not re-run if it can be avoided
+process_roms <- FALSE
 
-## Download and bias-correct ROMS outputs
-source(here("analysis", "get_roms_level2.R"))
+if (process_roms) {
+  
+  ## Download and bias-correct ROMS outputs
+  source(here("analysis", "get_roms_level2.R"))
+  
+  ## Extract ROMS outputs for each summer, stack variables for prediction
+  source(here("analysis", "join_roms_level2.R"))
+  
+  ## Extract covariates corresponding to survey locations and dates 1982-2022
+  source(here("analysis", "hindcast_extract.R"))
+  
+}
 
-## Extract ROMS outputs for each summer, stack variables for prediction
-source(here("analysis", "join_roms_level2.R"))
+## Read in ROMS-NPZ data
+ROMS_data <- read.csv(here("data", "surveyrep_observed_1982-2024.csv")) |> 
+  rename(temp_bottom5m = temp, pH_bottom5m = pH, oxygen_bottom5m = oxygen) |> 
+  group_by(year) |> 
+  mutate(cold_pool_2C = sum(temp_bottom5m < 2)/n()) |> 
+  ungroup()
 
-## Extract covariates corresponding to survey locations and dates 1982-2022
-source(here("analysis", "hindcast_extract.R"))
+## Read in unique EBS stations
+ebs_stations <- read.csv(here("data", "ebs_stations.csv"))
 
 # Parameters ----------------------------------------------------------------------------
 
@@ -65,15 +80,6 @@ weights <- read.csv(here("data", "model_weights.csv"))
 # Run Models ----------------------------------------------------------------------------
 
 dir.create(here("output"))
-
-## Read in ROMS-NPZ data
-source(here("analysis", "load_ROMS.R"))
-all_vars <- c("sim", "year", "station_id", "latitude", "longitude", "area_swept_km2", unique(unlist(lapply(mod_forms, all.vars))))
-ROMS_full <- drop_na(ROMS_full[,all_vars])
-
-## Save ROMS data
-write.csv(ROMS_full, here("data", "ROMS_surveyrep_joined.csv"), row.names = FALSE)
-write.csv(ebs_stations, here("data", "ebs_stations.csv"), row.names = FALSE)
 
 ## Expand specs data frame by adding rows for juveniles and adults
 specs <- as.data.frame(specs, row.names = NULL)
