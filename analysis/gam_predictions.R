@@ -134,4 +134,11 @@ roms <- roms |>
 
 saveRDS(roms, paste0(save_dir, "hindcast_level2.rds"))
 
+## Forecast, level-2 --------------------------------------------------------------------
 
+
+
+# Exit ----------------------------------------------------------------------------------
+
+file.remove(paste0(save_dir, "running"))
+file.create(paste0(save_dir, "complete"))
