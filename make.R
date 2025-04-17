@@ -28,6 +28,9 @@ if (process_roms) {
   ## Extract covariates corresponding to survey locations and dates 1982-2022
   source(here("analysis", "hindcast_extract.R"))
   
+  ## Download ROMS level 2 forecasts
+  source(here("analysis", "get_forecasts.R"))
+  
 }
 
 ## Read in ROMS-NPZ data
