@@ -29,7 +29,7 @@ if (process_roms) {
   source(here("analysis", "hindcast_extract.R"))
   
   ## Download ROMS level 2 forecasts
-  source(here("analysis", "get_forecasts.R"))
+  source(here("analysis", "mom6_forecast.R"))
   
 }
 

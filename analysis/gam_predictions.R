@@ -136,26 +136,26 @@ saveRDS(roms, paste0(save_dir, "hindcast_level2.rds"))
 
 ## Forecast, level-2 --------------------------------------------------------------------
 
-roms_fcst <- readRDS(here("data", "roms_forecast.rds"))
+mom6_fcst <- readRDS(here("data", "mom6", "mom6_forecast.rds"))
 
-fcst_df <- as.data.frame(roms_fcst)
+fcst_df <- as.data.frame(mom6_fcst)
 fcst_df$area_swept_km2 <- area_avg
-roms_keep <- which(complete.cases(as.data.frame(roms_yr)))
+mom6_keep <- which(complete.cases(as.data.frame(mom6_yr)))
 fit_vec <- rep(NA, nrow(fcst_df))
 
-## Predict binomial model average on ROMS grid
-binom_fit <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = fcst_df[roms_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE)))
-binom_se <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = fcst_df[roms_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE, se.fit = TRUE)$se.fit))
-fit_vec[roms_keep] <- c(apply(binom_fit, 1, weighted.mean, w = w_binom)); p_occ[[j]] <- fit_vec
-fit_vec[roms_keep] <- c(weighted_se(binom_fit, binom_se, w_binom)); se_p_occ[[j]] <- fit_vec
+## Predict binomial model average for MOM6 forecast on ROMS grid
+binom_fit <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = fcst_df[mom6_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE)))
+binom_se <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = fcst_df[mom6_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE, se.fit = TRUE)$se.fit))
+fit_vec[mom6_keep] <- c(apply(binom_fit, 1, weighted.mean, w = w_binom)); p_occ[[j]] <- fit_vec
+fit_vec[mom6_keep] <- c(weighted_se(binom_fit, binom_se, w_binom)); se_p_occ[[j]] <- fit_vec
 
-## Predict Tweedie model average on ROMS grid
-tw_fit <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = fcst_df[roms_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE)))
-tw_se <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = fcst_df[roms_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE, se.fit = TRUE)$se.fit))
-fit_vec[roms_keep] <- c(apply(tw_fit, 1, weighted.mean, w = w_tw)); cpue[[j]] <- fit_vec
-fit_vec[roms_keep] <- c(weighted_se(tw_fit, tw_se, w_tw)); se_cpue[[j]] <- fit_vec
+## Predict Tweedie model average for MOM6 forecast on ROMS grid
+tw_fit <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = fcst_df[mom6_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE)))
+tw_se <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = fcst_df[mom6_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE, se.fit = TRUE)$se.fit))
+fit_vec[mom6_keep] <- c(apply(tw_fit, 1, weighted.mean, w = w_tw)); cpue[[j]] <- fit_vec
+fit_vec[mom6_keep] <- c(weighted_se(tw_fit, tw_se, w_tw)); se_cpue[[j]] <- fit_vec
 
-roms_fcst <- roms_fcst |> 
+mom6_fcst <- mom6_fcst |> 
   mutate(
     p_occurrence = c(unlist(p_occ)), 
     p_occurrence_se = c(unlist(se_p_occ)), 
@@ -166,7 +166,7 @@ roms_fcst <- roms_fcst |>
     p_occurrence, p_occurrence_se, biomass_fit, biomass_se
   )
 
-saveRDS(roms, paste0(save_dir, "forecast_level2.rds"))
+saveRDS(mom6_fcst, paste0(save_dir, "forecast_level2.rds"))
 
 # Exit ----------------------------------------------------------------------------------
 
