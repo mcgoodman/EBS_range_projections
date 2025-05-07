@@ -6,6 +6,25 @@ library("here")
 library("aclim2sdms")
 library("Bering10KThredds")
 
+slice_proj <- function(x, start = 1993, end = 2022) {
+  
+  time <- st_get_dimension_values(x, "ocean_time")
+  year <- lubridate::year(time)
+  year_slice <- which(year >= start & year <= end)
+  x |> slice(year_slice, along = "ocean_time")
+  
+}
+
+summarize_proj <- function(x, start = 1993, end = 2022, var = p_occurrence, f = mean) {
+  
+  var <- enquo(var)
+  x <- x |> slice_proj(start, end) |> dplyr::select(!!var)
+  x <- st_apply(x, 1:2, f)
+  names(x) <- quo_name(var)
+  x
+  
+}
+
 # Read in MOM6 forecast -----------------------------------
 
 # Reference grid with latitude and longitude
@@ -84,4 +103,65 @@ mom6_fcst$cold_pool_2C <- sum(mom6_fcst$temp_bottom5m < 2, na.rm = TRUE)/sum(!is
 
 saveRDS(mom6_fcst, here("data", "mom6", "mom6_forecast.rds"))
 
+# MOM6 climatology ----------------------------------------
 
+mom6_clim <- read_stars(
+  here("data", "mom6", "mom6nep_hc202411_daily_clim_1993-2022.nc"), 
+  sub = c("tob", "btm_o2", "btm_htotal")
+)
+
+mom6_clim <- mom6_clim |> slice(
+  which(as.Date(st_get_dimension_values(mom6_clim, "time")) == as.Date("2022-07-01")), 
+  along = "time"
+)
+
+mom6_clim <- mom6_grid |> mutate(
+  temp_bottom5m = drop_units(c(mom6_clim$tob)), 
+  oxygen_bottom5m = as.numeric(c(mom6_clim$btm_o2)) * 1e3 * 1.025e3,
+  pH_bottom5m = -drop_units(log10(c(mom6_clim$btm_htotal) * 1.025))
+)
+
+# Overwrite coordinates
+st_dimensions(mom6_clim)$x$values <- as_units(x, ll_units)
+st_dimensions(mom6_clim)$y$values <- as_units(y, ll_units)
+
+# Transform to UTM
+mom6_clim <- st_transform(mom6_clim, st_crs(ak_coast))
+
+# Warp to ROMS grid
+mom6_clim <- mom6_clim |> st_warp(roms_grid)
+
+# Crop to EBS survey region
+mom6_clim <- mom6_clim[ebs]
+
+saveRDS(mom6_clim, here("data", "mom6", "mom6_climatology.rds"))
+
+# "Bias-corrected" MOM6 forecast --------------------------
+
+roms_hindcast <- readRDS(here("data", "roms_level2_bc_annual", "CORECFS_hindcast.rds"))
+
+roms_clim <- c(
+  summarize_proj(roms_hindcast, var = temp_bottom5m), 
+  summarize_proj(roms_hindcast, var = oxygen_bottom5m), 
+  summarize_proj(roms_hindcast, var = pH_bottom5m)
+)
+
+# Difference between ROMS and MOM6 climatology
+roms_mom6_diff <- mom6_clim |> 
+  select(-geolon, -geolat) |> 
+  mutate(
+    temp_diff = temp_bottom5m - c(roms_clim$temp_bottom5m), 
+    oxygen_diff = oxygen_bottom5m - c(roms_clim$oxygen_bottom5m),
+    pH_diff = pH_bottom5m - c(roms_clim$pH_bottom5m)
+  )
+
+mom6_fcst_adj <- mom6_fcst |> mutate(
+  temp_bottom5m = temp_bottom5m - c(roms_mom6_diff$temp_diff), 
+  oxygen_bottom5m = pmax(oxygen_bottom5m - c(roms_mom6_diff$oxygen_diff), 0),
+  pH_bottom5m = pH_bottom5m - c(roms_mom6_diff$pH_diff)
+)
+
+
+mom6_fcst_adj$cold_pool_2C <- sum(mom6_fcst_adj$temp_bottom5m < 2, na.rm = TRUE)/sum(!is.na(mom6_fcst_adj$temp_bottom5m))
+
+saveRDS(mom6_fcst_adj, here("data", "mom6", "mom6_forecast_adj.rds"))

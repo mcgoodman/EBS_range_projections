@@ -144,3 +144,6 @@ while(n_complete < nrow(specs)) {
   Sys.sleep(10)
   n_complete <- length(list.files(here("output"), pattern = "complete", recursive = TRUE))
 }
+
+# Obtain forecast maps
+source(here("analysis", "forecast_maps.R"))
