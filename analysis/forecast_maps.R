@@ -72,8 +72,8 @@ for (i in seq_along(sp_dirs)) {
     theme_void() + 
     theme(legend.position = "top", plot.background = element_rect(fill = "white", color = NA)) + 
     guides(
-      color = guide_colorbar("1995-2014 P(occurrence)", title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black"), 
-      fill = guide_colorbar("1995-2014 P(occurrence)", title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black")
+      color = guide_colorbar("1993-2022 P(occurrence)", title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black"), 
+      fill = guide_colorbar("1993-2022 P(occurrence)", title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black")
     )
   
   forecast_plot <- ggplot() + 
@@ -169,8 +169,8 @@ for (i in seq_along(sp_dirs)) {
     theme_void() + 
     theme(legend.position = "top", plot.background = element_rect(fill = "white", color = NA)) + 
     guides(
-      color = guide_colorbar("1995-2014 biomass proportion", title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black"), 
-      fill = guide_colorbar("1995-2014 biomass proportion", title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black")
+      color = guide_colorbar("1993-2022 biomass proportion", title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black"), 
+      fill = guide_colorbar("1993-2022 biomass proportion", title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black")
     )
   
   forecast_plot <- ggplot() + 
