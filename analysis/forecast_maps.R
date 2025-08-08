@@ -1,7 +1,7 @@
 
 # Setup -------------------------------------------------------------
 
-pkgs <- c("here", "dplyr", "tidyr", "ggplot2", "sf", "stars", "cowplot", "Bering10KThredds")
+pkgs <- c("here", "dplyr", "tidyr", "ggplot2", "sf", "stars", "cowplot", "BeringSeaData")
 sapply(pkgs, require, character.only = TRUE)
 
 save_dir <- here("output", "figures")
@@ -29,8 +29,8 @@ summarize_proj <- function(x, start = 1993, end = 2022, var = p_occurrence, f = 
 
 ## Read in hindcasts and forecasts, compute difference --------------
 
-sp_dirs <- list.files(here("output"), full.names = TRUE)
-sp_dirs <- sp_dirs[sp_dirs != save_dir]
+sp_dirs <- list.dirs(here("output"), full.names = TRUE)
+sp_dirs <- sp_dirs[!(sp_dirs %in% c(save_dir, here("output")))]
 sp_bin <- lapply(gsub("_", " ", basename(sp_dirs)), \(x) strsplit(x, split = "-")[[1]])
 
 hindcasts <- forecasts <- anomalies <- setNames(vector("list", length(sp_dirs)), basename(sp_dirs))
@@ -55,8 +55,10 @@ ak_coast <- get_ak_coast()
 hindcasts <- lapply(hindcasts, st_transform, crs = st_crs(ak_coast))
 forecasts <- lapply(forecasts, st_transform, crs = st_crs(ak_coast))
 anomalies <- lapply(anomalies, st_transform, crs = st_crs(ak_coast))
-ak_coast <- filter(st_crop(ak_coast, hindcasts$`walleye_pollock-adult`), is.na(DESC_))
+ak_coast <- filter(st_crop(ak_coast, hindcasts$`walleye_pollock-adult`), label != "Russia")
 ebs <- get_ebs_shapefile()
+
+saveRDS(list(hindcasts = hindcasts, forecasts = forecasts, anomalies = anomalies), here("output", "occurrence_mapdata.rds"))
 
 ## Plot -------------------------------------------------------------
 
@@ -152,6 +154,8 @@ for (i in seq_along(sp_dirs)) {
 hindcasts <- lapply(hindcasts, st_transform, crs = st_crs(ak_coast))
 forecasts <- lapply(forecasts, st_transform, crs = st_crs(ak_coast))
 anomalies <- lapply(anomalies, st_transform, crs = st_crs(ak_coast))
+
+saveRDS(list(hindcasts = hindcasts, forecasts = forecasts, anomalies = anomalies), here("output", "biomass_mapdata.rds"))
 
 ## Plot -------------------------------------------------------------
 
