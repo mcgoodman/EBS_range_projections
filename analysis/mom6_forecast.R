@@ -4,7 +4,7 @@ library("stars")
 library("units")
 library("here")
 library("aclim2sdms")
-library("Bering10KThredds")
+library("BeringSeaData")
 
 slice_proj <- function(x, start = 1993, end = 2022) {
   
@@ -29,28 +29,28 @@ summarize_proj <- function(x, start = 1993, end = 2022, var = p_occurrence, f = 
 
 # Reference grid with latitude and longitude
 mom6_grid <- read_stars(
-  here("data", "mom6", "ocean_static_ak.nc"),
+  here("data", "mom6", "mom6nep_hc202507_ocean_static_ak.nc"),
   sub = c("geolon", "geolat"),
   curvilinear = c("geolon", "geolat")
 )
 
 # Forecast bottom temperature, o2, and H+ concentration
 mom6_fcst <- read_stars(
-  here("data", "mom6", "mom6nep_hc202411_forecast_2025.nc"), 
+  here("data", "mom6", "mom6nep_hc202507_daily_anomaly_20250701.nc"), 
   sub = c("tob", "btm_o2", "btm_htotal")
 )
 
 # Subset to July 1st (middle of survey)
-july1 <- which(as.Date(st_get_dimension_values(mom6_fcst, "time")) == as.Date("2022-07-01"))
+july1 <- which(as.Date(st_get_dimension_values(mom6_fcst, "time")) == as.Date("2025-07-01"))
 mom6_fcst <- mom6_fcst |> slice(july1, along = "time")
 
 # Append forecasted variables to curvilinear grid,
-# and transform O2 from mol/kg --> (mmol/m3),
-# H+ (mol/kg) --> pH (with 1.025 adjustment for seawater density)
+# and transform O2 from mol/kg --> (mmol/m3)
+# Leave htotal untransformed to apply as anomaly before transforming later
 mom6_fcst <- mom6_grid |> mutate(
   temp_bottom5m = drop_units(c(mom6_fcst$tob)), 
   oxygen_bottom5m = as.numeric(c(mom6_fcst$btm_o2)) * 1e3 * 1.025e3,
-  pH_bottom5m = -drop_units(log10(c(mom6_fcst$btm_htotal) * 1.025))
+  htotal_bottom5m = drop_units(c(mom6_fcst$btm_htotal))
 )
 
 # Warp to ROMS grid ---------------------------------------
@@ -75,7 +75,7 @@ st_dimensions(mom6_fcst)$x$values <- as_units(x, ll_units)
 st_dimensions(mom6_fcst)$y$values <- as_units(y, ll_units)
 
 # Transform to UTM
-ak_coast <- Bering10KThredds::get_ak_coast()
+ak_coast <- BeringSeaData::get_ak_coast()
 mom6_fcst <- st_transform(mom6_fcst, st_crs(ak_coast))
 
 # Warp to ROMS grid
@@ -101,66 +101,30 @@ mom6_fcst <- mom6_fcst |> c(phi, depth) |> mutate(X = coords$X, Y = coords$Y)
 
 mom6_fcst$cold_pool_2C <- sum(mom6_fcst$temp_bottom5m < 2, na.rm = TRUE)/sum(!is.na(mom6_fcst$temp_bottom5m))
 
-saveRDS(mom6_fcst, here("data", "mom6", "mom6_forecast.rds"))
+# Apply MOM6 anomaly to ROMS climatology ------------------
 
-# MOM6 climatology ----------------------------------------
-
-mom6_clim <- read_stars(
-  here("data", "mom6", "mom6nep_hc202411_daily_clim_1993-2022.nc"), 
-  sub = c("tob", "btm_o2", "btm_htotal")
-)
-
-mom6_clim <- mom6_clim |> slice(
-  which(as.Date(st_get_dimension_values(mom6_clim, "time")) == as.Date("2022-07-01")), 
-  along = "time"
-)
-
-mom6_clim <- mom6_grid |> mutate(
-  temp_bottom5m = drop_units(c(mom6_clim$tob)), 
-  oxygen_bottom5m = as.numeric(c(mom6_clim$btm_o2)) * 1e3 * 1.025e3,
-  pH_bottom5m = -drop_units(log10(c(mom6_clim$btm_htotal) * 1.025))
-)
-
-# Overwrite coordinates
-st_dimensions(mom6_clim)$x$values <- as_units(x, ll_units)
-st_dimensions(mom6_clim)$y$values <- as_units(y, ll_units)
-
-# Transform to UTM
-mom6_clim <- st_transform(mom6_clim, st_crs(ak_coast))
-
-# Warp to ROMS grid
-mom6_clim <- mom6_clim |> st_warp(roms_grid)
-
-# Crop to EBS survey region
-mom6_clim <- mom6_clim[ebs]
-
-saveRDS(mom6_clim, here("data", "mom6", "mom6_climatology.rds"))
-
-# "Bias-corrected" MOM6 forecast --------------------------
+# H+ (mol/kg) --> pH (with 1.025 adjustment for seawater density)
+# pH = -log10(H+ * 1.025)
+# H+ = (10^(-pH))/1.025
 
 roms_hindcast <- readRDS(here("data", "roms_level2_bc_annual", "CORECFS_hindcast.rds"))
+
+roms_hindcast <- roms_hindcast |> 
+  mutate(htotal_bottom5m = (10^(-pH_bottom5m))/1.025)
 
 roms_clim <- c(
   summarize_proj(roms_hindcast, var = temp_bottom5m), 
   summarize_proj(roms_hindcast, var = oxygen_bottom5m), 
-  summarize_proj(roms_hindcast, var = pH_bottom5m)
+  summarize_proj(roms_hindcast, var = htotal_bottom5m)
 )
 
-# Difference between ROMS and MOM6 climatology
-roms_mom6_diff <- mom6_clim |> 
-  select(-geolon, -geolat) |> 
-  mutate(
-    temp_diff = temp_bottom5m - c(roms_clim$temp_bottom5m), 
-    oxygen_diff = oxygen_bottom5m - c(roms_clim$oxygen_bottom5m),
-    pH_diff = pH_bottom5m - c(roms_clim$pH_bottom5m)
-  )
-
+# Add MOM6 anomaly to ROMS climatology
 mom6_fcst_adj <- mom6_fcst |> mutate(
-  temp_bottom5m = temp_bottom5m - c(roms_mom6_diff$temp_diff), 
-  oxygen_bottom5m = pmax(oxygen_bottom5m - c(roms_mom6_diff$oxygen_diff), 0),
-  pH_bottom5m = pH_bottom5m - c(roms_mom6_diff$pH_diff)
+  temp_bottom5m = c(roms_clim$temp_bottom5m) + temp_bottom5m, 
+  oxygen_bottom5m = pmax(c(roms_clim$oxygen_bottom5m) + oxygen_bottom5m, min(roms_hindcast$oxygen_bottom5m, na.rm = TRUE)),
+  htotal_bottom5m = c(roms_clim$htotal_bottom5m) + htotal_bottom5m, 
+  pH_bottom5m = -log10(htotal_bottom5m * 1.025)
 )
-
 
 mom6_fcst_adj$cold_pool_2C <- sum(mom6_fcst_adj$temp_bottom5m < 2, na.rm = TRUE)/sum(!is.na(mom6_fcst_adj$temp_bottom5m))
 

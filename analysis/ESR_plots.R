@@ -57,7 +57,7 @@ occurrence_legend_plot <- data.frame(x = occurrence_seq) |>
   ) + 
   theme(legend.position = "top")
 
-occurrence_legend <- cowplot::get_plot_component(occurrence_legend_plot, "guide-box", return_all = TRUE)[[4]]
+occurrence_legend <- cowplot::get_legend(occurrence_legend_plot)
 
 anomaly_seq <- seq(-0.33, 0.33, 0.01)
 anomaly_legend_plot <- data.frame(x = anomaly_seq) |> 
@@ -72,7 +72,7 @@ anomaly_legend_plot <- data.frame(x = anomaly_seq) |>
   ) + 
   theme(legend.position = "top")
 
-anomaly_legend <- cowplot::get_plot_component(anomaly_legend_plot, "guide-box", return_all = TRUE)[[4]]
+anomaly_legend <- cowplot::get_legend(anomaly_legend_plot)
 
 blank <- ggplot() + geom_blank() + theme(plot.background = element_rect(fill = "white", color = NA), panel.background = element_rect(fill = "white", color = NA))
 
@@ -150,11 +150,14 @@ biomass_legend_plot <- data.frame(x = biomass_seq) |>
   geom_point() + 
   scale_color_viridis_c(option = "magma") + 
   guides(
-    color = guide_colorbar("biomass proportion", title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black")
+    color = guide_colorbar(
+      "biomass proportion", title.position = "top", title.hjust = 0.5, 
+      barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black"
+    )
   ) + 
   theme(legend.position = "top")
 
-biomass_legend <- cowplot::get_plot_component(biomass_legend_plot, "guide-box", return_all = TRUE)[[4]]
+biomass_legend <- cowplot::get_legend(biomass_legend_plot)
 
 anomaly_seq <- seq(diff_range[1], diff_range[2], length.out = 100)
 anomaly_legend_plot <- data.frame(x = anomaly_seq) |> 
@@ -162,14 +165,19 @@ anomaly_legend_plot <- data.frame(x = anomaly_seq) |>
   geom_point() + 
   scale_color_gradientn(
     colors = hex_ramp(anomaly_seq, diverging = TRUE), 
-    values = scales::rescale(anomaly_seq, from = diff_range, to = c(0, 1))
+    values = scales::rescale(anomaly_seq, from = diff_range, to = c(0, 1)), 
+    breaks = seq(-1e-4, 1e-4, length.out = 5), 
+    labels = as.character(seq(-1e-4, 1e-4, length.out = 5))
   ) + 
   guides(
-    color = guide_colorbar(expression(Delta~"biomass proportion"), title.position = "top", title.hjust = 0.5, barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black")
+    color = guide_colorbar(
+      expression(Delta~"biomass proportion"), title.position = "top", title.hjust = 0.5, 
+      barwidth = unit(12, "lines"), ticks.colour = "black", frame.colour = "black"
+    )
   ) + 
   theme(legend.position = "top")
 
-anomaly_legend <- cowplot::get_plot_component(anomaly_legend_plot, "guide-box", return_all = TRUE)[[4]]
+anomaly_legend <- cowplot::get_legend(anomaly_legend_plot)
 
 blank <- ggplot() + geom_blank() + theme(plot.background = element_rect(fill = "white", color = NA), panel.background = element_rect(fill = "white", color = NA))
 

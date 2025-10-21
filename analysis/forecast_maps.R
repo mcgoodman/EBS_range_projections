@@ -30,7 +30,7 @@ summarize_proj <- function(x, start = 1993, end = 2022, var = p_occurrence, f = 
 ## Read in hindcasts and forecasts, compute difference --------------
 
 sp_dirs <- list.dirs(here("output"), full.names = TRUE)
-sp_dirs <- sp_dirs[!(sp_dirs %in% c(save_dir, here("output")))]
+sp_dirs <- sp_dirs[!(sp_dirs %in% c(save_dir, here("output"), here("output", "ESR_plots")))]
 sp_bin <- lapply(gsub("_", " ", basename(sp_dirs)), \(x) strsplit(x, split = "-")[[1]])
 
 hindcasts <- forecasts <- anomalies <- setNames(vector("list", length(sp_dirs)), basename(sp_dirs))

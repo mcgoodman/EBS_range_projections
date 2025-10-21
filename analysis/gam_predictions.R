@@ -134,40 +134,6 @@ roms <- roms |>
 
 saveRDS(roms, paste0(save_dir, "hindcast_level2.rds"))
 
-## Forecast, level-2 --------------------------------------------------------------------
-
-mom6_fcst <- readRDS(here("data", "mom6", "mom6_forecast.rds"))
-
-fcst_df <- as.data.frame(mom6_fcst)
-fcst_df$area_swept_km2 <- area_avg
-mom6_keep <- which(complete.cases(as.data.frame(fcst_df)))
-fit_vec <- rep(NA, nrow(fcst_df))
-
-## Predict binomial model average for MOM6 forecast on ROMS grid
-binom_fit <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = fcst_df[mom6_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE)))
-binom_se <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = fcst_df[mom6_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE, se.fit = TRUE)$se.fit))
-fit_vec[mom6_keep] <- c(apply(binom_fit, 1, weighted.mean, w = w_binom)); p_occ <- fit_vec
-fit_vec[mom6_keep] <- c(weighted_se(binom_fit, binom_se, w_binom)); se_p_occ <- fit_vec
-
-## Predict Tweedie model average for MOM6 forecast on ROMS grid
-tw_fit <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = fcst_df[mom6_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE)))
-tw_se <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = fcst_df[mom6_keep,], type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE, se.fit = TRUE)$se.fit))
-fit_vec[mom6_keep] <- c(apply(tw_fit, 1, weighted.mean, w = w_tw)); cpue <- fit_vec
-fit_vec[mom6_keep] <- c(weighted_se(tw_fit, tw_se, w_tw)); se_cpue <- fit_vec
-
-mom6_fcst <- mom6_fcst |> 
-  mutate(
-    p_occurrence = c(unlist(p_occ)), 
-    p_occurrence_se = c(unlist(se_p_occ)), 
-    biomass_fit = c(unlist(cpue)),
-    biomass_se = c(unlist(se_cpue))
-  ) |> 
-  dplyr::select(
-    p_occurrence, p_occurrence_se, biomass_fit, biomass_se
-  )
-
-saveRDS(mom6_fcst, paste0(save_dir, "forecast_level2.rds"))
-
 ## Forecast, level-2, ROMS/MOM6 climatology adjusted ------------------------------------
 
 mom6_fcst <- readRDS(here("data", "mom6", "mom6_forecast_adj.rds"))
