@@ -14,19 +14,16 @@ sapply(pkgs, require, character.only = TRUE)
 
 # Download & bias-correct ROMS level 2 data ---------------------------------------------
 
+# Years to download data / fit model for
+years <- c(1993:2019, 2021:2022)
+
 ## This takes up to a couple days - do not re-run if it can be avoided
 process_roms <- FALSE
 
 if (process_roms) {
   
   ## Download and bias-correct ROMS outputs
-  source(here("analysis", "get_roms_level2.R"))
-  
-  ## Extract ROMS outputs for each summer, stack variables for prediction
-  source(here("analysis", "join_roms_level2.R"))
-  
-  ## Extract covariates corresponding to survey locations and dates 1982-2022
-  source(here("analysis", "hindcast_extract.R"))
+  source(here("analysis", "get_mom6_level2.R"))
   
   ## Download ROMS level 2 forecasts
   source(here("analysis", "mom6_forecast.R"))
@@ -34,8 +31,7 @@ if (process_roms) {
 }
 
 ## Read in ROMS-NPZ data
-ROMS_data <- read.csv(here("data", "surveyrep_observed_1982-2024.csv")) |> 
-  rename(temp_bottom5m = temp, pH_bottom5m = pH, oxygen_bottom5m = oxygen) |> 
+ROMS_data <- read.csv(here("data", "surveyrep_observed_1982-2022.csv")) |> 
   group_by(year) |> 
   mutate(cold_pool_2C = sum(temp_bottom5m < 2)/n()) |> 
   ungroup()

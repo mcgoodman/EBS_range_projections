@@ -39,8 +39,8 @@ drop_yrs <- drop_yrs$year[drop_yrs$p == 1]
 
 ## Merge survey data with hindcast ROMS-NPZ data
 model_data <- cpue_data |>
-  filter(!(year %in% drop_yrs)) |> 
-  left_join(dplyr::select(ROMS_data, -sampled), by = c("station_id", "year")) |> 
+  filter(!(year %in% drop_yrs) & year %in% years) |> 
+  left_join(ROMS_data, by = c("station_id", "year")) |> 
   mutate(present = as.numeric(cpue_kgkm2 > 0))
 
 rm(cpue_data, srvy, drop_yrs)

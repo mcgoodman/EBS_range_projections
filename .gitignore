@@ -4,3 +4,9 @@
 .Ruserdata
 output/*
 .DS_Store
+data/mom6/
+data/roms*
+data/ROMS*
+data/BC*
+data/surveyrep*
+data/trawl_surveys_size_binned/

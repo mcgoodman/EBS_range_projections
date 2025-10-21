@@ -79,12 +79,12 @@ ROMS_fit <- cbind(
 
 write.csv(ROMS_fit, paste0(save_dir, "hindcast_surveyrep_fit.csv"))
 
-## Model predictions & SE - ROMS level 2 hindcast ---------------------------------------
+## Model predictions & SE - MOM6 level 2 hindcast ---------------------------------------
 
 # Average area swept in km2
 area_avg <- round(mean(ROMS_data$area_swept_km2[ROMS_data$sampled]), 5)
 
-roms <- readRDS(here("data", "roms_level2_bc_annual", "CORECFS_hindcast.rds"))
+roms <- readRDS(here("data", "mom6", "mom6_hindcast.rds"))
 
 ## Two-degree cold pool extent
 cold_pool_2C <- roms |> dplyr::select(temp_bottom5m) |> 

@@ -6,25 +6,6 @@ library("here")
 library("aclim2sdms")
 library("BeringSeaData")
 
-slice_proj <- function(x, start = 1993, end = 2022) {
-  
-  time <- st_get_dimension_values(x, "ocean_time")
-  year <- lubridate::year(time)
-  year_slice <- which(year >= start & year <= end)
-  x |> slice(year_slice, along = "ocean_time")
-  
-}
-
-summarize_proj <- function(x, start = 1993, end = 2022, var = p_occurrence, f = mean) {
-  
-  var <- enquo(var)
-  x <- x |> slice_proj(start, end) |> dplyr::select(!!var)
-  x <- st_apply(x, 1:2, f)
-  names(x) <- quo_name(var)
-  x
-  
-}
-
 # Read in MOM6 forecast -----------------------------------
 
 # Reference grid with latitude and longitude
@@ -36,7 +17,7 @@ mom6_grid <- read_stars(
 
 # Forecast bottom temperature, o2, and H+ concentration
 mom6_fcst <- read_stars(
-  here("data", "mom6", "mom6nep_hc202507_daily_anomaly_20250701.nc"), 
+  here("data", "mom6", "mom6nep_hc202507_selected_daily_20250701.nc"), 
   sub = c("tob", "btm_o2", "btm_htotal")
 )
 
@@ -46,11 +27,11 @@ mom6_fcst <- mom6_fcst |> slice(july1, along = "time")
 
 # Append forecasted variables to curvilinear grid,
 # and transform O2 from mol/kg --> (mmol/m3)
-# Leave htotal untransformed to apply as anomaly before transforming later
+# H+ (mol/kg) --> pH (with 1.025 adjustment for seawater density)
 mom6_fcst <- mom6_grid |> mutate(
   temp_bottom5m = drop_units(c(mom6_fcst$tob)), 
   oxygen_bottom5m = as.numeric(c(mom6_fcst$btm_o2)) * 1e3 * 1.025e3,
-  htotal_bottom5m = drop_units(c(mom6_fcst$btm_htotal))
+  pH_bottom5m = drop_units(-log10(c(mom6_fcst$btm_htotal) * 1.025))
 )
 
 # Warp to ROMS grid ---------------------------------------
@@ -78,13 +59,13 @@ st_dimensions(mom6_fcst)$y$values <- as_units(y, ll_units)
 ak_coast <- BeringSeaData::get_ak_coast()
 mom6_fcst <- st_transform(mom6_fcst, st_crs(ak_coast))
 
-# Warp to ROMS grid
-roms_grid <- readRDS(here("data", "roms_level2_bc_annual", "CORECFS_hindcast.rds"))
-roms_grid <- roms_grid |> select() |> slice(1, along = "ocean_time")
-mom6_fcst <- mom6_fcst |> st_warp(roms_grid)
+# Warp to grid returned by BeringSeaData::get_mom6_nep
+cefi_grid <- readRDS(here("data", "mom6", "mom6_hindcast.rds"))
+cefi_grid <- cefi_grid |> select() |> slice(1, along = "ocean_time")
+mom6_fcst <- mom6_fcst |> st_warp(cefi_grid)
 
 # Crop to EBS survey region
-ebs <- get_ebs_shapefile() |> st_transform("+proj=longlat +datum=WGS84") |> st_shift_longitude()
+ebs <- get_ebs_shapefile()
 mom6_fcst <- mom6_fcst[ebs]
 
 # Append additional variables -----------------------------
@@ -92,40 +73,9 @@ mom6_fcst <- mom6_fcst[ebs]
 phi <- setNames(st_warp(get_sediment(), mom6_fcst), "phi")
 depth <- setNames(st_warp(get_bathymetry(), mom6_fcst), "depth_m")
 
-coords <- mom6_fcst |> 
-  st_coordinates() |> 
-  mutate(xi_rho = rotate_lon(xi_rho)) |> 
-  add_utm(c("xi_rho", "eta_rho"), utm_crs = "+proj=utm +zone=2 +datum=WGS84")
-
-mom6_fcst <- mom6_fcst |> c(phi, depth) |> mutate(X = coords$X, Y = coords$Y)
+coords <- mom6_fcst |> st_coordinates()
+mom6_fcst <- mom6_fcst |> c(phi, depth) |> mutate(X = coords$x/1000, Y = coords$y/1000)
 
 mom6_fcst$cold_pool_2C <- sum(mom6_fcst$temp_bottom5m < 2, na.rm = TRUE)/sum(!is.na(mom6_fcst$temp_bottom5m))
 
-# Apply MOM6 anomaly to ROMS climatology ------------------
-
-# H+ (mol/kg) --> pH (with 1.025 adjustment for seawater density)
-# pH = -log10(H+ * 1.025)
-# H+ = (10^(-pH))/1.025
-
-roms_hindcast <- readRDS(here("data", "roms_level2_bc_annual", "CORECFS_hindcast.rds"))
-
-roms_hindcast <- roms_hindcast |> 
-  mutate(htotal_bottom5m = (10^(-pH_bottom5m))/1.025)
-
-roms_clim <- c(
-  summarize_proj(roms_hindcast, var = temp_bottom5m), 
-  summarize_proj(roms_hindcast, var = oxygen_bottom5m), 
-  summarize_proj(roms_hindcast, var = htotal_bottom5m)
-)
-
-# Add MOM6 anomaly to ROMS climatology
-mom6_fcst_adj <- mom6_fcst |> mutate(
-  temp_bottom5m = c(roms_clim$temp_bottom5m) + temp_bottom5m, 
-  oxygen_bottom5m = pmax(c(roms_clim$oxygen_bottom5m) + oxygen_bottom5m, min(roms_hindcast$oxygen_bottom5m, na.rm = TRUE)),
-  htotal_bottom5m = c(roms_clim$htotal_bottom5m) + htotal_bottom5m, 
-  pH_bottom5m = -log10(htotal_bottom5m * 1.025)
-)
-
-mom6_fcst_adj$cold_pool_2C <- sum(mom6_fcst_adj$temp_bottom5m < 2, na.rm = TRUE)/sum(!is.na(mom6_fcst_adj$temp_bottom5m))
-
-saveRDS(mom6_fcst_adj, here("data", "mom6", "mom6_forecast_adj.rds"))
+saveRDS(mom6_fcst, here("data", "mom6", "mom6_forecast_adj.rds"))
