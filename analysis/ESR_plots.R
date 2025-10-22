@@ -80,8 +80,8 @@ joined_legend <- cowplot::plot_grid(blank, occurrence_legend, anomaly_legend, bl
 
 ## Map plot ---------------------------------------------------------
 
-coast <- st_crop(get_ak_coast(), occurrence)
 ebs <- get_ebs_shapefile()
+coast <- st_crop(get_ak_coast(), st_buffer(ebs, 1e5))
 
 occurrence_maps <- ggplot() + 
   geom_sf(data = coast, fill = "grey80", color = "grey60") + 
@@ -165,9 +165,7 @@ anomaly_legend_plot <- data.frame(x = anomaly_seq) |>
   geom_point() + 
   scale_color_gradientn(
     colors = hex_ramp(anomaly_seq, diverging = TRUE), 
-    values = scales::rescale(anomaly_seq, from = diff_range, to = c(0, 1)), 
-    breaks = seq(-1e-4, 1e-4, length.out = 5), 
-    labels = as.character(seq(-1e-4, 1e-4, length.out = 5))
+    values = scales::rescale(anomaly_seq, from = diff_range, to = c(0, 1))
   ) + 
   guides(
     color = guide_colorbar(
@@ -191,7 +189,7 @@ biomass_maps <- ggplot() +
   geom_sf(data = ebs, fill = NA, color = "grey40", linewidth = 0.5) +
   facet_grid(species_bin ~ category, switch = "y") + 
   scale_fill_identity() + 
-  scale_color_identity() + 
+  scale_color_identity() +
   theme_minimal() +
   coord_sf(expand = FALSE, clip = "off") + 
   scale_x_continuous(breaks = seq(-180, -150, 10)) + 
@@ -221,7 +219,7 @@ hindcasts <- lapply(sp_bins, \(x) readRDS(
 ))
 
 forecasts <- lapply(sp_bins, \(x) readRDS(
-  here("output", x, "forecast_level2.rds")
+  here("output", x, "forecast_level2_adj.rds")
 ))
 
 forecast_means <- forecasts |> 
