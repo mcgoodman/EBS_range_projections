@@ -55,6 +55,7 @@ write.csv(fit_obs, paste0(save_dir, "fitted_observed.csv"), row.names = FALSE)
 ## Model predictions & SE - survey-replicated scale -------------------------------------
 
 ROMS_fit <- ROMS_data
+ROMS_data <- ROMS_data |> mutate(year_chr = as.character(year))
 
 # Binomial model estimates and standard errors
 binom_fit <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = ROMS_data, type = "response")))
@@ -65,15 +66,15 @@ binom_se <- weighted_se(binom_fit, binom_se, w_binom)
 binom_fit <- apply(binom_fit, 1, weighted.mean, w = w_binom)
 
 # Tweedie model estimates and standard errors
-tw_fit <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = ROMS_data, type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE)))
-tw_se <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = ROMS_data, type = "response", exclude = "s(year_chr)", newdata.guaranteed = TRUE, se.fit = TRUE)$se.fit))
+tw_fit <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = ROMS_data, type = "response")))
+tw_se <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = ROMS_data, type = "response", se.fit = TRUE)$se.fit))
 
 # Tweedie ensemble estimates and standard errors
 tw_se <- weighted_se(tw_fit, tw_se, w_tw)
 tw_fit <- apply(tw_fit, 1, weighted.mean, w = w_tw)
 
 ROMS_fit <- cbind(
-  ROMS_fit[,c("station_id", "longitude", "latitude")], 
+  ROMS_fit[,c("year", "station_id", "longitude", "latitude")], 
   data.frame(p_occurrence = binom_fit, p_occurrence_se = binom_se, biomass_fit = tw_fit, biomass_se = tw_se)
 )
 
@@ -82,7 +83,7 @@ write.csv(ROMS_fit, paste0(save_dir, "hindcast_surveyrep_fit.csv"))
 ## Model predictions & SE - MOM6 level 2 hindcast ---------------------------------------
 
 # Average area swept in km2
-area_avg <- round(mean(ROMS_data$area_swept_km2[ROMS_data$sampled]), 5)
+area_avg <- round(mean(ROMS_data$area_swept_km2), 5)
 
 roms <- readRDS(here("data", "mom6", "mom6_hindcast.rds"))
 

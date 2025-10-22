@@ -53,7 +53,7 @@ hauldata <- hauldata |>
          lat = latitude_dd_end, area_swept_km2) |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326, remove = FALSE) |> 
   st_transform(st_crs(mom6)) |> 
-  mutate(X = st_coordinates(geometry)[,1], Y = st_coordinates(geometry)[,1])
+  mutate(X = st_coordinates(geometry)[,1], Y = st_coordinates(geometry)[,2])
 
 # Extract
 mom6_survey <- mom6 |> st_extract(hauldata, time_column = "date")

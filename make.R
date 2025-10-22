@@ -89,7 +89,7 @@ specs$length_bin[is.na(specs$threshold)] <- NA
 rm(specs_rep)
 
 ## Number of simultaneous jobs to run
-cores <- 6
+cores <- 8
 
 ## Launch each species / length bin on new R processes as they become available
 for (i in 1:nrow(specs)) {
