@@ -1,6 +1,14 @@
 
-pkgs <- c("here", "dplyr", "tidyr", "purrr", "ggplot2", "sf", "stars", "mgcv", "aclim2sdms", "dismo")
-sapply(pkgs, require, character.only = TRUE)
+library("here")
+library("dplyr")
+library("tidyr")
+library("purrr")
+library("ggplot2")
+library("sf")
+library("stars")
+library("mgcv")
+library("aclim2sdms")
+library("dismo")
 
 save_dir <- paste0(here("output", paste0(gsub(" ", "_", species), ifelse(is.na(length_bin), "", paste0("-", length_bin)))), "/")
 dir.create(save_dir)
@@ -54,20 +62,20 @@ write.csv(fit_obs, paste0(save_dir, "fitted_observed.csv"), row.names = FALSE)
 
 ## Model predictions & SE - survey-replicated scale -------------------------------------
 
-ROMS_fit <- ROMS_data
-ROMS_data <- ROMS_data |> mutate(year_chr = as.character(year))
+ROMS_fit <- MOM6_data
+MOM6_data <- MOM6_data |> mutate(year_chr = as.character(year))
 
 # Binomial model estimates and standard errors
-binom_fit <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = ROMS_data, type = "response")))
-binom_se <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = ROMS_data, type = "response", se.fit = TRUE)$se.fit))
+binom_fit <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = MOM6_data, type = "response")))
+binom_se <- simplify2array(lapply(binom_models, \(x) predict(x, newdata = MOM6_data, type = "response", se.fit = TRUE)$se.fit))
 
 # Binomial ensemble estimates and standard errors
 binom_se <- weighted_se(binom_fit, binom_se, w_binom)
 binom_fit <- apply(binom_fit, 1, weighted.mean, w = w_binom)
 
 # Tweedie model estimates and standard errors
-tw_fit <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = ROMS_data, type = "response")))
-tw_se <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = ROMS_data, type = "response", se.fit = TRUE)$se.fit))
+tw_fit <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = MOM6_data, type = "response")))
+tw_se <- simplify2array(lapply(tw_models, \(x) predict(x, newdata = MOM6_data, type = "response", se.fit = TRUE)$se.fit))
 
 # Tweedie ensemble estimates and standard errors
 tw_se <- weighted_se(tw_fit, tw_se, w_tw)
@@ -83,7 +91,7 @@ write.csv(ROMS_fit, paste0(save_dir, "hindcast_surveyrep_fit.csv"))
 ## Model predictions & SE - MOM6 level 2 hindcast ---------------------------------------
 
 # Average area swept in km2
-area_avg <- round(mean(ROMS_data$area_swept_km2), 5)
+area_avg <- round(mean(MOM6_data$area_swept_km2), 5)
 
 roms <- readRDS(here("data", "mom6", "mom6_hindcast.rds"))
 
@@ -95,12 +103,12 @@ cold_pool_2C <- cold_pool_2C$temp_bottom5m
 ## Add cold pool extent to ROMS raster 
 roms$cold_pool_2C <- rep(cold_pool_2C, each = dim(roms)[1] * dim(roms)[2])
 
-roms_yrs <- st_get_dimension_values(roms, "ocean_time")
+roms_yrs <- st_get_dimension_values(roms, "time")
 p_occ <- se_p_occ <- cpue <- se_cpue <- vector("list", length(roms_yrs))
 
 for (j in 1:length(roms_yrs)) {
   
-  roms_yr <- slice(roms, along = "ocean_time", j)
+  roms_yr <- slice(roms, along = "time", j)
   
   ## Need to work with data frame for predicting ignoring random effects
   roms_yr_df <- as.data.frame(roms_yr)
@@ -137,7 +145,7 @@ saveRDS(roms, paste0(save_dir, "hindcast_level2.rds"))
 
 ## Forecast, level-2, ROMS/MOM6 climatology adjusted ------------------------------------
 
-mom6_fcst <- readRDS(here("data", "mom6", "mom6_forecast_adj.rds"))
+mom6_fcst <- readRDS(here("data", "mom6", "mom6_forecast.rds"))
 
 fcst_df <- as.data.frame(mom6_fcst)
 fcst_df$area_swept_km2 <- area_avg

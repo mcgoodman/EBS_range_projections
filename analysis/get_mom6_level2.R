@@ -1,6 +1,10 @@
 
-pkgs <- c("here", "stars", "dplyr", "curl", "aclim2sdms", "BeringSeaData")
-sapply(pkgs, require, character.only = TRUE)
+library("here")
+library("stars")
+library("dplyr")
+library("curl")
+library("aclim2sdms")
+library("BeringSeaData")
 
 # hauls
 if(!exists("years")) years <- c(1993:2019, 2021:2022)
@@ -34,31 +38,35 @@ for (i in 1:nrow(specs)) {
     
     mom6_i[[y]] <- get_mom6_nep(
       specs$cefi_name[i], freq = "daily", category = specs$cefi_category[i], 
-      release = "r20250818", start_date = start_date, end_date = end_date
+      release = "r20250912", start_date = start_date, end_date = end_date
     )
     
   }
   
   mom6[[specs$cefi_name[i]]] <- do.call("c", mom6_i)
-  
+  mom6[[vars[i]]] <- mom6[[vars[i]]] |> st_set_dimensions(
+    values = do.call("c", lapply(mom6_i, st_get_dimension_values, "time")),
+    which = 3, names = "time"
+  )
+
 }
 
 mom6 <- do.call("c", mom6)
+mom6_dates <- as.Date(st_get_dimension_values(mom6, "time"), origin = as.Date("1993-01-01"))
+mom6 <- st_set_dimensions(mom6, "time", values = mom6_dates)
 
 # Extract for hauls -----------------------------------------------------------
 
 # Convert haul data to sf for extracting from MOM6 outputs
 hauldata <- hauldata |> 
-  select(year, station_id = station, date, lon = longitude_dd_start,
-         lat = latitude_dd_end, area_swept_km2) |>
+  select(year, station_id = station, date, lon = longitude_dd_start, 
+         lat = latitude_dd_start, area_swept_km2) |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326, remove = FALSE) |> 
   st_transform(st_crs(mom6)) |> 
   mutate(X = st_coordinates(geometry)[,1], Y = st_coordinates(geometry)[,2])
 
 # Extract
 mom6_survey <- mom6 |> st_extract(hauldata, time_column = "date")
-
-mom6_dates <- st_get_dimension_values(mom6, "time")
 
 # Extract nearest for coordinates outside raster
 for (i in seq_len(nrow(mom6_survey))) {
@@ -106,10 +114,10 @@ write.csv(hauldata, here("data", "surveyrep_observed_1982-2022.csv"), row.names 
 july_dates <- as.Date(paste0(years, "-07-01"))
 mom6_july1 <- mom6 |> slice(which(mom6_dates %in% july_dates), along = "time") |> units::drop_units()
 
-phi_rep <- st_replicate(phi, "ocean_time", values = july_dates)
-bathy_rep <- st_replicate(bathy, "ocean_time", values = july_dates)
+phi_rep <- st_replicate(phi, "time", values = july_dates)
+bathy_rep <- st_replicate(bathy, "time", values = july_dates)
 
-mom6_july1 <- mom6_july1 |> st_set_dimensions(3, values = july_dates, names = "ocean_time")
+mom6_july1 <- mom6_july1 |> st_set_dimensions(3, values = july_dates, names = "time")
 mom6_july1 <- c(mom6_july1, phi_rep)
 mom6_july1 <- c(mom6_july1, bathy_rep)
 
@@ -123,5 +131,9 @@ mom6_july1 <- mom6_july1 |>
 
 coords <- st_coordinates(mom6_july1)
 mom6_july1 <- mom6_july1 |> mutate(X = coords$x/1000, Y = coords$y/1000) 
+
+mom6_july1 <- mom6_july1 |> 
+  mutate(depth_m = -depth_m) |> 
+  select(temp_bottom5m, oxygen_bottom5m, pH_bottom5m, phi, depth_m)
 
 saveRDS(mom6_july1, here("data", "mom6", "mom6_hindcast.rds"))

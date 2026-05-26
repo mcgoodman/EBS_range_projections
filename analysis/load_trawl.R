@@ -26,7 +26,7 @@ drop_yrs <- drop_yrs$year[drop_yrs$p == 1]
 ## Merge survey data with ROMS-NPZ data
 model_data <- cpue_data |>
   filter(!(year %in% drop_yrs) & year %in% years) |> 
-  left_join(dplyr::select(ROMS_data, -area_swept_km2), by = c("station_id", "year")) |> 
+  left_join(dplyr::select(MOM6_data, -area_swept_km2), by = c("station_id", "year")) |> 
   mutate(present = as.numeric(cpue_kgkm2 > 0)) |> 
   drop_na()
 

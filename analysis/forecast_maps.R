@@ -8,10 +8,10 @@ save_dir <- here("output", "figures")
 
 slice_proj <- function(x, start = 1993, end = 2022) {
   
-  time <- st_get_dimension_values(x, "ocean_time")
+  time <- st_get_dimension_values(x, "time")
   year <- lubridate::year(time)
   year_slice <- which(year >= start & year <= end)
-  x |> slice(year_slice, along = "ocean_time")
+  x |> slice(year_slice, along = "time")
   
 }
 

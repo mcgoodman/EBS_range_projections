@@ -4,11 +4,11 @@ if (!require("aclim2sdms")) {
   require("aclim2sdms")
 }
 
-if (!require("Bering10KThredds")) {
-  devtools::install_github("mcgoodman/Bering10KThredds")
+if (!require("BeringSeaData")) {
+  pak::install_github("mcgoodman/BeringSeaData")
 }
 
-pkgs <- c("here", "dplyr", "tidyr", "purrr", "ggplot2", "sf", "stars", "ncmeta", "mgcv", "aclim2sdms", "Bering10KThredds", "foreach", "doParallel")
+pkgs <- c("here", "dplyr", "tidyr", "purrr", "ggplot2", "sf", "stars", "ncmeta", "mgcv", "aclim2sdms", "BeringSeaData", "foreach", "doParallel")
 
 sapply(pkgs, require, character.only = TRUE)
 
@@ -17,21 +17,21 @@ sapply(pkgs, require, character.only = TRUE)
 # Years to download data / fit model for
 years <- c(1993:2019, 2021:2022)
 
-## This takes up to a couple days - do not re-run if it can be avoided
-process_roms <- FALSE
+run_type <- c("PEEC_2026", "ESR_2025")[1]
 
-if (process_roms) {
-  
-  ## Download and bias-correct ROMS outputs
+if (run_type == "PEEC_2026") {
+  ## Read in and format Kelly's PEEC MOM6 hindcast
+  source(here("analysis", "read_mom6_peec.R"))
+} else {
+  ## Download MOM6 hindcast
   source(here("analysis", "get_mom6_level2.R"))
-  
-  ## Download ROMS level 2 forecasts
-  source(here("analysis", "mom6_forecast.R"))
-  
 }
+  
+## Process forecasts
+source(here("analysis", "mom6_forecast.R"))
 
 ## Read in ROMS-NPZ data
-ROMS_data <- read.csv(here("data", "surveyrep_observed_1982-2022.csv")) |> 
+MOM6_data <- read.csv(here("data", "surveyrep_observed_1982-2022.csv")) |> 
   group_by(year) |> 
   mutate(cold_pool_2C = sum(temp_bottom5m < 2)/n()) |> 
   ungroup()

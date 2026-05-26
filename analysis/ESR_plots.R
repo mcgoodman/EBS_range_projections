@@ -236,9 +236,9 @@ hindcast_ts <- hindcasts |>
   lapply(st_apply, 3, \(x) sum(x > 0.5, na.rm = TRUE)/sum(!is.na(x))) |> 
   lapply(as.data.frame) |> 
   bind_rows(.id = "species_bin") |> 
-  mutate(year = lubridate::year(ocean_time)) |> 
-  filter(as.character(ocean_time) != "1976-07-04 11:56:00") |> 
-  select(-ocean_time) |> 
+  mutate(year = lubridate::year(time)) |> 
+  filter(as.character(time) != "1976-07-04 11:56:00") |> 
+  select(-time) |> 
   bind_rows(forecast_means) |> 
   separate("species_bin", into = c("species", "bin"), remove = FALSE, sep = "-", fill = "right") |> 
   mutate(
