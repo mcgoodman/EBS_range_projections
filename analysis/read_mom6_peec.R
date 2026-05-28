@@ -44,7 +44,7 @@ for (i in seq_along(vars)) {
     ))
     
     start_date <- min(c(hauldata$date[hauldata$year == years[y]], as.Date(paste0(years[y], "-04-30")))) - 1
-    end_date <- max(hauldata$date[hauldata$year == years[y]]) + 1
+    end_date <- max(c(hauldata$date[hauldata$year == years[y]], as.Date(paste0(years[y], "-07-01")))) + 1
     dates_iy <- st_get_dimension_values(mom6_i[[y]], "time")
 
     mom6_i[[y]] <- mom6_i[[y]] |> 
@@ -112,7 +112,7 @@ hauldata <- hauldata |>
          lat = latitude_dd_start, area_swept_km2) |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326, remove = FALSE) |> 
   st_transform(st_crs(mom6)) |> 
-  mutate(X = st_coordinates(geometry)[,1], Y = st_coordinates(geometry)[,2])
+  mutate(X = st_coordinates(geometry)[,1]/1000, Y = st_coordinates(geometry)[,2]/1000)
 
 # Nearest-neighbor extraction
 mom6_survey <- mom6 |> st_extract(hauldata, time_column = "date")
@@ -136,36 +136,46 @@ hauldata <- st_drop_geometry(hauldata)
 
 write.csv(hauldata, here("data", "surveyrep_observed_1982-2022.csv"), row.names = FALSE)
 
-# Create annual snapshot (April 30) comparable to persistence forecast --------
+# Annual snapshots ------------------------------------------------------------
 
-# Subset to April 30th
-apr_dates <- as.Date(paste0(years, "-07-01"))
-mom6_apr30 <- mom6 |> slice(which(mom6_dates %in% apr_dates), along = "time") |> units::drop_units()
-mom6_apr30 <- mom6_apr30 |> st_set_dimensions(3, values = apr_dates, names = "time")
+# Persistence forecast is computed from April anomaly and July climatology
+# April 30th snapshots needed to compuate April climatology and 2026 anomaly
+# July 1st snapshots needed to compute July climatology
 
-# Add bathymetry and sediment grain size
-phi_rep <- st_replicate(phi, "time", values = apr_dates)
-bathy_rep <- st_replicate(bathy, "time", values = apr_dates)
-mom6_apr30 <- c(mom6_apr30, phi_rep)
-mom6_apr30 <- c(mom6_apr30, bathy_rep)
+clim_dates <- list(apr30 = as.Date(paste0(years, "-04-30")), july1 = as.Date(paste0(years, "-07-01")))
 
-# Warp to regrid for cropping
+# Files for cropping MOM6 extent
 ebs <- get_ebs_shapefile("EBS", type = "boundary")
 regrid <- get_mom6_nep(start_date = as.Date("2000-01-01"), end_date =  as.Date("2000-02-01"), extent = st_bbox(ebs))
 regrid <- slice(regrid, 1, along = "time")
-coords <- list(ih = rotate_lon(x, from = "0/360"), jh = y)
-mom6_apr30 <- mom6_apr30 |> st_as_stars(curvilinear = coords) |> st_warp(regrid, threshold = 0.5)
 
-# Crop to EBS
-mom6_apr30 <- mom6_apr30[ebs]
+for (i in seq_along(clim_dates)) {
 
-# Assign UTM coordinates as attribute
-coords <- st_coordinates(mom6_apr30)
-mom6_apr30 <- mom6_apr30 |> mutate(X = coords$x/1000, Y = coords$y/1000) 
+  mom6_clim <- mom6 |> slice(which(mom6_dates %in% clim_dates[[i]]), along = "time") |> units::drop_units()
+  mom6_clim <- mom6_clim |> st_set_dimensions(3, values = clim_dates[[i]], names = "time")
 
-# Remove unecessary variables, clip bathymetry
-mom6_apr30 <- mom6_apr30 |> 
-  mutate(depth_m = pmin(-pmin(0, depth_m), max(hauldata$depth_m))) |> 
-  select(temp_bottom5m, oxygen_bottom5m, pH_bottom5m, phi, depth_m, X, Y)
+  # Add bathymetry and sediment grain size
+  phi_rep <- st_replicate(phi, "time", values = clim_dates[[i]])
+  bathy_rep <- st_replicate(bathy, "time", values = clim_dates[[i]])
+  mom6_clim <- c(mom6_clim, phi_rep)
+  mom6_clim <- c(mom6_clim, bathy_rep)
 
-saveRDS(mom6_apr30, here("data", "mom6_hindcast", "mom6_hindcast.rds"))
+  # Warp to regrid for cropping
+  coords <- list(ih = rotate_lon(x, from = "0/360"), jh = y)
+  mom6_clim <- mom6_clim |> st_as_stars(curvilinear = coords) |> st_warp(regrid, threshold = 0.5)
+
+  # Crop to EBS
+  mom6_clim <- mom6_clim[ebs]
+
+  # Assign UTM coordinates as attribute
+  coords <- st_coordinates(mom6_clim)
+  mom6_clim <- mom6_clim |> mutate(X = coords$x/1000, Y = coords$y/1000) 
+
+  # Remove unecessary variables, clip bathymetry
+  mom6_clim <- mom6_clim |> 
+    mutate(depth_m = pmin(-pmin(0, depth_m), max(hauldata$depth_m))) |> 
+    select(temp_bottom5m, oxygen_bottom5m, pH_bottom5m, phi, depth_m, X, Y)
+
+  saveRDS(mom6_clim, here("data", "mom6_hindcast", paste0("mom6_hindcast_", names(clim_dates)[i], ".rds")))
+
+}

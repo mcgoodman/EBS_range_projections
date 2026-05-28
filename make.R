@@ -17,18 +17,23 @@ sapply(pkgs, require, character.only = TRUE)
 # Years to download data / fit model for
 years <- c(1993:2019, 2021:2022)
 
+process_mom6 <- FALSE
 run_type <- c("PEEC_2026", "ESR_2025")[1]
 
-if (run_type == "PEEC_2026") {
-  ## Read in and format Kelly's PEEC MOM6 hindcast
-  source(here("analysis", "read_mom6_peec.R"))
-} else {
-  ## Download MOM6 hindcast
-  source(here("analysis", "get_mom6_level2.R"))
-}
+if (process_mom6) {
   
-## Process forecasts
-source(here("analysis", "mom6_forecast.R"))
+  if (run_type == "PEEC_2026") {
+    ## Read in and format Kelly's PEEC MOM6 hindcast
+    source(here("analysis", "read_mom6_peec.R"))
+  } else {
+    ## Download MOM6 hindcast
+    source(here("analysis", "get_mom6_level2.R"))
+  }
+  
+  ## Process forecasts
+  source(here("analysis", "mom6_forecast.R"))
+  
+}
 
 ## Read in ROMS-NPZ data
 MOM6_data <- read.csv(here("data", "surveyrep_observed_1982-2022.csv")) |> 
@@ -54,22 +59,21 @@ mod_forms <- list(
 ## select is whether to choose best model based on time-series ("TSCV") or 5-fold ("CV") cross validation
 specs <- list(
   
-  species = c("arrowtooth flounder", "Pacific halibut", "Pacific cod", 
-              "walleye pollock", "yellowfin sole", "northern rock sole", 
-              "snow crab", "red king crab"), 
+  species = c("arrowtooth flounder", "Pacific halibut", "Pacific cod", "walleye pollock", 
+              "northern rock sole", "snow crab", "red king crab"), 
   
   survey_file = c(
     here("data", "trawl_surveys_size_binned", c(
       "ebs.srvy98.atf.cpue_data.Rdata", "ebs.srvy98.halibut.cpue_data.Rdata", 
       "ebs.srvy98.pcod.cpue_data.Rdata", "ebs.srvy98.plk.cpue_data.Rdata",
-      "ebs.srvy98.yfs.cpue_data.Rdata", "ebs.srvy98.nrs.cpue_data.Rdata"
+      "ebs.srvy98.nrs.cpue_data.Rdata"
     )), 
     here("data", "trawl_surveys", c(
       "snow_crab.csv", "red_king_crab.csv"
     ))
   ), 
   
-  threshold = c(48, 50, 58, 38, 30, 31, NA, NA)
+  threshold = c(48, 50, 58, 38, 31, NA, NA)
   
 )
 
@@ -124,11 +128,11 @@ for (i in 1:nrow(specs)) {
     importEnv = TRUE
   )
   
-  Sys.sleep(10)
+  Sys.sleep(5)
   n_running <- length(list.files(here("output"), pattern = "running", recursive = TRUE))
   
   while(n_running >= cores) {
-    Sys.sleep(10)
+    Sys.sleep(5)
     n_running <- length(list.files(here("output"), pattern = "running", recursive = TRUE))
   }
   
@@ -137,7 +141,7 @@ for (i in 1:nrow(specs)) {
 ## Wait until all jobs are done to continue
 n_complete <- length(list.files(here("output"), pattern = "complete", recursive = TRUE))
 while(n_complete < nrow(specs)) {
-  Sys.sleep(10)
+  Sys.sleep(5)
   n_complete <- length(list.files(here("output"), pattern = "complete", recursive = TRUE))
 }
 
